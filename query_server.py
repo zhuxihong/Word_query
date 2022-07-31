@@ -7,6 +7,22 @@ class Word:
     def __init__(self):
         self.sql=Mysql()
         self.userid=""
+
+    def taget(self,conned:socket):
+        while True:
+            date = conned.recv(1024)
+            if not date:
+                return
+            msg=date.decode().split(" ",1)
+            if msg[0]=="LOG":
+                self.look_word(conned,msg[1],self.look_user)
+            elif msg[0]=='REGI':
+                self.look_word(conned,msg[1],self.log_user)
+            elif msg[0]=="QUERY":
+                self.qurt(conned,msg[1])
+            elif msg[0]=="HIST":
+                self.lishichaxun(conned)
+
     # 用户登录/注册
     def look_word(self,sock:socket,msg:str,zhixing):
         msg=msg.split(" ",1)
@@ -92,9 +108,12 @@ class Mysql:
         self.cur.execute(date)
         jieguo = self.cur.fetchone()
         mytime = time.strftime("%Y/%m/%d %H:%M:%S")
+        self.charu(jieguo,userid,mytime)
+        return jieguo
+
+    def charu(self,jieguo,userid,mytime):
         if jieguo:
             charu = "insert into user_query(user_id,dict_id,time) values (%s,%s,'%s')" % (userid, jieguo[0], mytime)
-            print(charu)
         else:
             charu = "insert into user_query(user_id,dict_id,time) values (%s,%s,'%s')" % (userid,'NULL', mytime)
         try:
@@ -103,7 +122,6 @@ class Mysql:
         except:
             self.db.rollback()
             print('出错了')
-        return jieguo
     # 根据用户id 查询历史记录表
     def chalishi(self,userid):
         data='select word,mean,time from user_query as qu left join user as us on qu.user_id=us.id left join dict as dic on qu.dict_id=dic.id where user_id=%s limit 10'%userid
@@ -111,12 +129,12 @@ class Mysql:
         return self.cur.fetchall()
 # 自定义线程类
 class MyThreaing(Thread):
-    def __init__(self,taget,date):
+    def __init__(self,date):
         self.date=date
-        self.taget=taget
+        self.taget=Word()
         super().__init__()
     def run(self) -> None:
-        self.taget(self.date)
+        self.taget.taget(self.date)
 # 创建TCP网络连接类
 class TcpNetWord:
     def __init__(self,post=8888,url="0.0.0.0"):
@@ -133,24 +151,8 @@ class TcpNetWord:
         self.sock.listen(5)
         while True:
             conned,addr=self.sock.accept()
-            t=MyThreaing(self.taget,conned)
+            t=MyThreaing(conned)
             t.start()
-
-    def taget(self,conned:socket):
-        word = Word()
-        while True:
-            date = conned.recv(1024)
-            if not date:
-                return
-            msg=date.decode().split(" ",1)
-            if msg[0]=="LOG":
-                word.look_word(conned,msg[1],word.look_user)
-            elif msg[0]=='REGI':
-                word.look_word(conned,msg[1],word.log_user)
-            elif msg[0]=="QUERY":
-                word.qurt(conned,msg[1])
-            elif msg[0]=="HIST":
-                word.lishichaxun(conned)
 
 if __name__ == '__main__':
     tcpnetword=TcpNetWord()

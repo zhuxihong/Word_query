@@ -69,6 +69,8 @@ class uid:
                     self.operation.user_log(sock,'REGI',"成功注册")
                 elif one_inp=="3":
                     return
+                else:
+                    print('请输入正确选项')
             while True:
                 self.tow_udi()
                 user_que = input("输入需要的功能:")
@@ -78,7 +80,7 @@ class uid:
                     self.operation.chalishi(sock)
                 elif user_que == "3":
                     break
-
+        sock.close()
 if __name__ == '__main__':
     uids=uid()
     uids.main()
