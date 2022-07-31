@@ -21,12 +21,11 @@ Mysql数据库     DICT(ID WORD TEXT) USER(ID NAME PASSWORD) USER_DICT(ID name w
 
 通讯协议：
 请求       请求码      响应码
-登录       LOGE       OK/SHIBAI
-注册       ZHUCE      OK/SHIBAI
-查单词     SELECT     OK/SHIBAI
-历史记录：  LISHI      OK/SHIBAI
+登录       LOG      OK/FAIL
+注册       REGI     OK/FAIL
+查单词     QUERY     OK/FAIL
+历史记录：  HIST     OK
 """
 
-
-class mysql:
-    def __init__(self):
+if __name__ == '__main__':
+    pass
