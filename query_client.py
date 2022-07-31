@@ -6,6 +6,8 @@ ADDR=(STR,POST)
 class Operation:
     def __init__(self):
         self.name=""
+        self.sock = socket()
+        self.sock.connect(ADDR)
     def user_log(self,sock,request,tishi):
         while True:
             user_name = input("请输入用户名:")
@@ -56,17 +58,15 @@ class uid:
         """
         print(tow)
     def main(self):
-        sock = socket()
-        sock.connect(ADDR)
         while True:
             while True:
                 self.one_uid()
                 one_inp=input("功能选择：")
                 if one_inp == "1":
-                    self.operation.user_log(sock,"LOG","登录成功")
+                    self.operation.user_log(self.operation.sock,"LOG","登录成功")
                     break
                 elif one_inp=="2":
-                    self.operation.user_log(sock,'REGI',"成功注册")
+                    self.operation.user_log(self.operation.sock,'REGI',"成功注册")
                 elif one_inp=="3":
                     return
                 else:
@@ -75,9 +75,9 @@ class uid:
                 self.tow_udi()
                 user_que = input("输入需要的功能:")
                 if user_que == "1":
-                    self.operation.qust(sock)
+                    self.operation.qust(self.operation.sock)
                 elif user_que == "2":
-                    self.operation.chalishi(sock)
+                    self.operation.chalishi(self.operation.sock)
                 elif user_que == "3":
                     break
         sock.close()

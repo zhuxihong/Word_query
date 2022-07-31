@@ -12,7 +12,7 @@ class Word:
         while True:
             date = conned.recv(1024)
             if not date:
-                return
+                break
             msg=date.decode().split(" ",1)
             if msg[0]=="LOG":
                 self.look_word(conned,msg[1],self.look_user)
@@ -22,7 +22,8 @@ class Word:
                 self.qurt(conned,msg[1])
             elif msg[0]=="HIST":
                 self.lishichaxun(conned)
-
+        self.sql.sql_cloes()
+        conned.close()
     # 用户登录/注册
     def look_word(self,sock:socket,msg:str,zhixing):
         msg=msg.split(" ",1)
@@ -95,6 +96,9 @@ class Mysql:
         self.db=pymysql.connect(**addr)
         self.cur=self.db.cursor()
         print("链接数据库成功")
+    def sql_cloes(self):
+        self.db.close()
+        self.cur.close()
     # 数据库查询用户是否存在
     def cahxun(self,msg):
         date="select id,name,password from user where name='%s';"%msg[0]
